@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"image/png"
 	"log"
@@ -30,13 +31,25 @@ func main() {
 	}
 
 	canvas := g.From6to16()
-	oFile, err := os.Create(outputFile)
+	file4x4, err := os.Create(fmt.Sprintf("4x4_%s", outputFile))
 	if err != nil {
 		panic(err)
 	}
-	defer oFile.Close()
+	defer file4x4.Close()
 
-	err = png.Encode(oFile, canvas)
+	err = png.Encode(file4x4, canvas)
+	if err != nil {
+		panic(err)
+	}
+
+	canvas = g.From16to51(canvas)
+	file6x9, err := os.Create(fmt.Sprintf("6x9_%s", outputFile))
+	if err != nil {
+		panic(err)
+	}
+	defer file6x9.Close()
+
+	err = png.Encode(file6x9, canvas)
 	if err != nil {
 		panic(err)
 	}
