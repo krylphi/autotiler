@@ -24,12 +24,12 @@ func main() {
 		panic(err)
 	}
 
-	g := NewUnpacker(img, 15)
+	g := NewUnpacker(img, 4)
 	if err := g.Init(); err != nil {
 		log.Fatal(err)
 	}
 
-	canvas := g.From6to15()
+	canvas := g.From6to16()
 	oFile, err := os.Create(outputFile)
 	if err != nil {
 		panic(err)

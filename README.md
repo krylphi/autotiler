@@ -9,7 +9,7 @@ Tileset-Generator convert tileset like this:
 
 To tileset like this:
 
-![complete](examples/output/tileset/output.15.png)
+![complete](examples/output/tileset/output.4x4.png)
 
 ## How to use
 * put simple tileset image (for example 2x3_packed.png) to source folder
@@ -19,9 +19,9 @@ To tileset like this:
 * enjoy
 
 ## Roadmap
-- [x] Unpack from 6 tiles to 15 tiles
-- [ ] Unpack from 6 or 15 tiles to 47 tiles
-- [ ] Unpack from 6, 15 or 47 tiles to 256 tiles
-- [ ] Pack 256 -> 47 -> 15 -> 6
+- [x] Unpack from 6 tiles to 16 tiles
+- [ ] Unpack from 6 or 16 tiles to 47 tiles
+- [ ] Unpack from 6, 16 or 47 tiles to 256 tiles
+- [ ] Pack 256 -> 47 -> 16 -> 6
 - [ ] Export to Tiled
 - [ ] Export to Godot

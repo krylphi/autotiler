@@ -57,10 +57,10 @@ func (u *Unpacker) Init() error {
 	return nil
 }
 
-func (u *Unpacker) From6to15() image.Image {
-	canvas := image.NewNRGBA(image.Rect(0, 0, u.tileWidth*15, u.tileHeight))
+func (u *Unpacker) From6to16() image.Image {
+	canvas := image.NewNRGBA(image.Rect(0, 0, u.tileWidth*4, u.tileHeight*4))
 	// todo optimize to generate automatically and consider scaling for 47 and 255 tilesets
-	quadMap := [15][4][2]int{
+	quadMap := [16][4][2]int{
 		{
 			{1, 3}, {2, 3}, // tile 1
 			{1, 4}, {2, 4},
@@ -102,28 +102,32 @@ func (u *Unpacker) From6to15() image.Image {
 			{3, 2}, {0, 2},
 		},
 		{
-			{3, 5}, {0, 0}, // tile 11
+			{3, 5}, {1, 0}, // tile 11
 			{3, 2}, {0, 2},
 		},
 		{
-			{3, 5}, {0, 0}, // tile 12
+			{3, 5}, {1, 0}, // tile 12
 			{3, 2}, {1, 1},
 		},
 		{
-			{3, 5}, {0, 0}, // tile 13
+			{3, 5}, {1, 0}, // tile 13
 			{0, 1}, {0, 2},
 		},
 		{
-			{3, 5}, {0, 0}, // tile 14
+			{3, 5}, {1, 0}, // tile 14
 			{0, 1}, {1, 1},
 		},
 		{
-			{0, 0}, {0, 1}, // tile 15
+			{0, 0}, {1, 0}, // tile 15
+			{0, 2}, {3, 2},
+		},
+		{
+			{0, 0}, {0, 1}, // tile 16
 			{0, 1}, {1, 1},
 		},
 	}
 
-	for idx := 0; idx < 15; idx++ {
+	for idx := 0; idx < 16; idx++ {
 		u.drawFullTile(canvas, quadMap[idx], idx)
 	}
 	return canvas
