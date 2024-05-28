@@ -61,25 +61,26 @@ func (u *Unpacker) Init() error {
 	return nil
 }
 
-func (u *Unpacker) From6to15Terrain1() *image.NRGBA {
-	canvas := image.NewNRGBA(image.Rect(0, 0, u.tileWidth*15, u.tileHeight*1))
+func (u *Unpacker) From6to16Terrain1() *image.NRGBA {
+	canvas := image.NewNRGBA(image.Rect(0, 0, u.tileWidth*16, u.tileHeight*1))
 	// todo optimize to generate automatically and consider scaling for 47 and 255 tilesets
-	quadMap := export28TileSet()
+	exp := export28TileSet()
+	quadMap := append(exp[:14], exp[15], exp[14])
 
-	for idx := 0; idx < 15; idx++ {
-		u.drawFullTile(canvas, quadMap[idx], idx, 15)
+	for idx := 0; idx < 16; idx++ {
+		u.drawFullTile(canvas, quadMap[idx], idx, 16)
 	}
 	return canvas
 }
 
-func (u *Unpacker) From6to15Terrain2() *image.NRGBA {
-	canvas := image.NewNRGBA(image.Rect(0, 0, u.tileWidth*15, u.tileHeight*1))
+func (u *Unpacker) From6to16Terrain2() *image.NRGBA {
+	canvas := image.NewNRGBA(image.Rect(0, 0, u.tileWidth*16, u.tileHeight*1))
 	// todo optimize to generate automatically and consider scaling for 47 and 255 tilesets
 	exp := export28TileSet()
-	quadMap := append(exp[14:], exp[0])
+	quadMap := append(exp[14:], exp[1], exp[0])
 
-	for idx := 0; idx < 15; idx++ {
-		u.drawFullTile(canvas, quadMap[idx], idx, 15)
+	for idx := 0; idx < 16; idx++ {
+		u.drawFullTile(canvas, quadMap[idx], idx, 16)
 	}
 	return canvas
 }

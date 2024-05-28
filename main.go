@@ -32,8 +32,8 @@ func main() {
 
 	// todo parallel
 
-	canvas := g.From6to15Terrain1()
-	file15t1, err := os.Create(fmt.Sprintf("15x1_terrain1_%s", outputFile))
+	canvas := g.From6to16Terrain1()
+	file15t1, err := os.Create(fmt.Sprintf("16x1_terrain1_%s", outputFile))
 	if err != nil {
 		panic(err)
 	}
@@ -44,8 +44,8 @@ func main() {
 		panic(err)
 	}
 
-	canvas = g.From6to15Terrain2()
-	file15t2, err := os.Create(fmt.Sprintf("15x1_terrain2_%s", outputFile))
+	canvas = g.From6to16Terrain2()
+	file15t2, err := os.Create(fmt.Sprintf("16x1_terrain2_%s", outputFile))
 	if err != nil {
 		panic(err)
 	}
@@ -68,15 +68,18 @@ func main() {
 		panic(err)
 	}
 
-	canvas = g.From28To92(canvas)
-	file2, err := os.Create(fmt.Sprintf("8x12_%s", outputFile))
-	if err != nil {
-		panic(err)
-	}
-	defer file2.Close()
+	/*
+		// TODO: consider usability
+		canvas = g.From28To92(canvas)
+		file2, err := os.Create(fmt.Sprintf("8x12_%s", outputFile))
+		if err != nil {
+			panic(err)
+		}
+		defer file2.Close()
 
-	err = png.Encode(file2, canvas)
-	if err != nil {
-		panic(err)
-	}
+		err = png.Encode(file2, canvas)
+		if err != nil {
+			panic(err)
+		}
+	*/
 }
