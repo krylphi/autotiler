@@ -61,10 +61,65 @@ func (u *Unpacker) Init() error {
 	return nil
 }
 
-func (u *Unpacker) From6to16() *image.NRGBA {
-	canvas := image.NewNRGBA(image.Rect(0, 0, u.tileWidth*4, u.tileHeight*4))
+func (u *Unpacker) From6to15Terrain1() *image.NRGBA {
+	canvas := image.NewNRGBA(image.Rect(0, 0, u.tileWidth*15, u.tileHeight*1))
 	// todo optimize to generate automatically and consider scaling for 47 and 255 tilesets
-	quadMap := [16][4][2]int{
+	quadMap := export28TileSet()
+
+	for idx := 0; idx < 15; idx++ {
+		u.drawFullTile(canvas, quadMap[idx], idx, 15)
+	}
+	return canvas
+}
+
+func (u *Unpacker) From6to15Terrain2() *image.NRGBA {
+	canvas := image.NewNRGBA(image.Rect(0, 0, u.tileWidth*15, u.tileHeight*1))
+	// todo optimize to generate automatically and consider scaling for 47 and 255 tilesets
+	exp := export28TileSet()
+	quadMap := append(exp[14:], exp[0])
+
+	for idx := 0; idx < 15; idx++ {
+		u.drawFullTile(canvas, quadMap[idx], idx, 15)
+	}
+	return canvas
+}
+
+func (u *Unpacker) From6to28() *image.NRGBA {
+	canvas := image.NewNRGBA(image.Rect(0, 0, u.tileWidth*14, u.tileHeight*2))
+	// todo optimize to generate automatically and consider scaling for 47 and 255 tilesets
+
+	quadMap := export28TileSet()
+
+	for idx := 0; idx < 28; idx++ {
+		u.drawFullTile(canvas, quadMap[idx], idx, 14)
+	}
+	return canvas
+}
+
+func (u *Unpacker) From28To92(img *image.NRGBA) *image.NRGBA {
+	//51
+	//6 x 9 region (54 total spaces, 3 empty)
+	canvas := image.NewNRGBA(image.Rect(0, 0, u.tileWidth*8, u.tileHeight*12))
+	rotations := [28]int{
+		// we don't rotate 1st tile, and also the one with all 4 corners filled.
+		// The opposing tiles need only 1 rotation
+		0, 3, 3, 3, 1, 3, 3, 3, 3, 0, 3, 3, 1, 3,
+		0, 3, 3, 3, 1, 3, 3, 3, 3, 0, 3, 3, 1, 3,
+	}
+	idx := 0 // result tile index
+	i := 0   // rotations map index
+	for y := 0; y < 2; y++ {
+		for x := 0; x < 14; x++ {
+			idx = u.expandWithRotation(img, canvas, idx, rotations[i], x, y, 8)
+			i++
+		}
+	}
+	return canvas
+}
+
+func export28TileSet() [28][4][2]int {
+	return [28][4][2]int{
+		// terrain 1
 		{
 			{1, 3}, {2, 3}, // tile 1
 			{1, 4}, {2, 4},
@@ -121,49 +176,73 @@ func (u *Unpacker) From6to16() *image.NRGBA {
 			{3, 5}, {1, 0}, // tile 14
 			{0, 1}, {1, 1},
 		},
+		// end of terrain 1
+		// terrain 2
 		{
-			{0, 0}, {1, 0}, // tile 15
-			{0, 2}, {3, 2},
-		},
-		{
-			{0, 0}, {0, 1}, // tile 16
+			{0, 0}, {0, 1}, // tile 15
 			{0, 1}, {1, 1},
 		},
+		{
+			{0, 5}, {3, 5}, // tile 16
+			{0, 1}, {1, 1},
+		},
+		{
+			{0, 4}, {3, 0}, // tile 17
+			{0, 5}, {1, 5},
+		},
+		{
+			{0, 4}, {1, 4}, // tile 18
+			{0, 5}, {1, 5},
+		},
+		{
+			{0, 3}, {3, 3}, // tile 19
+			{0, 4}, {3, 4},
+		},
+		{
+			{0, 3}, {3, 0}, // tile 20
+			{0, 4}, {3, 1},
+		},
+		{
+			{0, 3}, {2, 3}, // tile 21
+			{0, 4}, {3, 1},
+		},
+		{
+			{0, 3}, {3, 0}, // tile 22
+			{0, 4}, {2, 4},
+		},
+		{
+			{0, 3}, {2, 3}, // tile 23
+			{0, 4}, {2, 4},
+		},
+		{
+			{2, 0}, {3, 0}, // tile 24
+			{2, 1}, {3, 1},
+		},
+		{
+			{2, 0}, {2, 3}, // tile 25
+			{2, 1}, {3, 1},
+		},
+		{
+			{2, 0}, {2, 3}, // tile 26
+			{2, 1}, {2, 4},
+		},
+		{
+			{2, 0}, {2, 3}, // tile 27
+			{1, 4}, {3, 1},
+		},
+		{
+			{2, 0}, {2, 3}, // tile 28
+			{1, 4}, {2, 4},
+		},
 	}
-
-	for idx := 0; idx < 16; idx++ {
-		u.drawFullTile(canvas, quadMap[idx], idx)
-	}
-	return canvas
 }
 
-func (u *Unpacker) From16to51(img *image.NRGBA) *image.NRGBA {
-	//51
-	//6 x 9 region (54 total spaces, 3 empty)
-	canvas := image.NewNRGBA(image.Rect(0, 0, u.tileWidth*6, u.tileHeight*9))
-	rotations := [16]int{ // we don't rotate 1st and last tile, and also the one with all 4 corners empty
-		0, 3, 3, 3,
-		1, 3, 3, 3,
-		3, 0, 3, 3,
-		1, 3, 3, 0,
-	}
-	idx := 0 // result tile index
-	i := 0   // rotations map index
-	for y := 0; y < 4; y++ {
-		for x := 0; x < 4; x++ {
-			idx = u.expandWithRotation(img, canvas, idx, rotations[i], x, y)
-			i++
-		}
-	}
-	return canvas
-}
-
-func (u *Unpacker) drawFullTile(canvas *image.NRGBA, data [4][2]int, idx int) {
+func (u *Unpacker) drawFullTile(canvas *image.NRGBA, data [4][2]int, idx int, outXTiles int) {
 	for i, xy := range data {
 		x := xy[0]
 		y := xy[1]
-		line := idx / u.outXTiles
-		row := idx % u.outXTiles
+		line := idx / outXTiles
+		row := idx % outXTiles
 		shiftX := i % 2 * u.tileWidth / 2
 		shiftY := i >> 1 * u.tileHeight / 2
 		canvasMin := image.Point{
@@ -188,10 +267,8 @@ func (u *Unpacker) drawFullTile(canvas *image.NRGBA, data [4][2]int, idx int) {
 	}
 }
 
-func (u *Unpacker) expandWithRotation(src *image.NRGBA, canvas *image.NRGBA, idx int, rotations int, x int, y int) int {
+func (u *Unpacker) expandWithRotation(src, canvas *image.NRGBA, idx, rotations, x, y, outXTiles int) int {
 	index := idx
-	outXTiles := 6
-	// draw original tile
 	line := idx / outXTiles
 	row := idx % outXTiles
 	canvasMin := image.Point{
@@ -223,6 +300,7 @@ func (u *Unpacker) expandWithRotation(src *image.NRGBA, canvas *image.NRGBA, idx
 		point,
 		draw.Src,
 	)
+	//debugSave(canvas)
 
 	for i := 0; i < rotations; i++ { // rotate 90 degrees for [rotations] times
 		index++
@@ -250,6 +328,7 @@ func (u *Unpacker) expandWithRotation(src *image.NRGBA, canvas *image.NRGBA, idx
 			},
 			draw.Src,
 		)
+		//debugSave(canvas)
 	}
 	return index + 1 // because we draw original tile first
 }
