@@ -65,7 +65,7 @@ func (u *Unpacker) From6to16Terrain1() *image.NRGBA {
 	canvas := image.NewNRGBA(image.Rect(0, 0, u.tileWidth*16, u.tileHeight*1))
 	// todo optimize to generate automatically and consider scaling for 47 and 255 tilesets
 	exp := export28TileSet()
-	quadMap := append(exp[:14], exp[15], exp[14])
+	quadMap := append(exp[:14], exp[15], exp[14]) // 15 - filled terrain 2, 14 - small terrain 2 patch on top
 
 	for idx := 0; idx < 16; idx++ {
 		u.drawFullTile(canvas, quadMap[idx], idx, 16)
@@ -77,7 +77,7 @@ func (u *Unpacker) From6to16Terrain2() *image.NRGBA {
 	canvas := image.NewNRGBA(image.Rect(0, 0, u.tileWidth*16, u.tileHeight*1))
 	// todo optimize to generate automatically and consider scaling for 47 and 255 tilesets
 	exp := export28TileSet()
-	quadMap := append(exp[14:], exp[1], exp[0])
+	quadMap := append(exp[14:], exp[1], exp[0]) // 0 - filled terrain 1, 1 - small terrain 1 patch on top
 
 	for idx := 0; idx < 16; idx++ {
 		u.drawFullTile(canvas, quadMap[idx], idx, 16)
