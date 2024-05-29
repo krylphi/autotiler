@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/krylphi/autotiler/unpack"
 	"image"
 	"image/png"
 	"log"
@@ -25,7 +26,7 @@ func main() {
 		panic(err)
 	}
 
-	g := NewUnpacker(img, 4)
+	g := unpack.NewUnpacker(img, 4)
 	if err := g.Init(); err != nil {
 		log.Fatal(err)
 	}
