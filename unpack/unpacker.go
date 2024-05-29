@@ -97,6 +97,7 @@ func (u *Unpacker) From6to28() *image.NRGBA {
 	return canvas
 }
 
+// Deprecated: inconsistent behaviour in Tiled
 func (u *Unpacker) From28To92(img *image.NRGBA) *image.NRGBA {
 	//51
 	//6 x 9 region (54 total spaces, 3 empty)

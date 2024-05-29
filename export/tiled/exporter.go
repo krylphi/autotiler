@@ -50,6 +50,33 @@ func NewExporter(template *Template) *Exporter {
 	}
 }
 
+func NewTemplate(
+	tilesetName string,
+	tileWidth int,
+	tileHeight int,
+	tileCount int,
+	columns int,
+	imageSource string,
+	imageWidth int,
+	imageHeight int,
+	terrain1Name string,
+	terrain2Name string,
+) *Template {
+	return &Template{
+		TiledVersion: "1.10.2",
+		TilesetName:  tilesetName,
+		TileWidth:    tileWidth,
+		TileHeight:   tileHeight,
+		TileCount:    tileCount,
+		Columns:      columns,
+		ImageSource:  imageSource,
+		ImageWidth:   imageWidth,
+		ImageHeight:  imageHeight,
+		Terrain1Name: terrain1Name,
+		Terrain2Name: terrain2Name,
+	}
+}
+
 func (e *Exporter) Export() error {
 	err := e.tmpl.Validate()
 	if err != nil {

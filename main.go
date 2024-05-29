@@ -34,7 +34,7 @@ func main() {
 	// todo parallel
 
 	canvas := g.From6to16Terrain1()
-	file15t1, err := os.Create(fmt.Sprintf("16x1_terrain1_%s", outputFile))
+	file15t1, err := os.Create(fmt.Sprintf("out/16x1_terrain1_%s", outputFile))
 	if err != nil {
 		panic(err)
 	}
@@ -46,7 +46,7 @@ func main() {
 	}
 
 	canvas = g.From6to16Terrain2()
-	file15t2, err := os.Create(fmt.Sprintf("16x1_terrain2_%s", outputFile))
+	file15t2, err := os.Create(fmt.Sprintf("out/16x1_terrain2_%s", outputFile))
 	if err != nil {
 		panic(err)
 	}
@@ -58,7 +58,7 @@ func main() {
 	}
 
 	canvas = g.From6to28()
-	file1, err := os.Create(fmt.Sprintf("14x2_%s", outputFile))
+	file1, err := os.Create(fmt.Sprintf("out/14x2_%s", outputFile))
 	if err != nil {
 		panic(err)
 	}
