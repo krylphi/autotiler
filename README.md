@@ -21,6 +21,14 @@ To tilesets like this:
 
 ![14x2](examples/output/tileset/14x2_output.png)
 
+12x4 Terrain 1 to 2:
+
+![12x4_T1](examples/output/tileset/12x4_terrain1_output.png)
+
+12x4 Terrain 2 to 1:
+
+![12x4_T1](examples/output/tileset/12x4_terrain2_output.png)
+
 
 ## How to use
 * [get yourself Go](https://go.dev/doc/install) 

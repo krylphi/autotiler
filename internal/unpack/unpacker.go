@@ -40,6 +40,16 @@ func NewUnpacker(src image.Image, xTiles, yTiles int) *Unpacker {
 	}
 }
 
+// getAnchorPoint calculates the anchor point for a specific tile position and tile side segments.
+// The anchor point is used to determine the starting point for drawing a tile on the canvas.
+//
+// Parameters:
+// - x: The x-coordinate of the tile position.
+// - y: The y-coordinate of the tile position.
+// - tileSideSegments: The number of segments in a tile (e.g. packed tile was segmented. 2 for to 2x2, 3 for 3x3, etc.).
+//
+// Returns:
+// - An image.Point representing the anchor point (top-left).
 func (u *Unpacker) getAnchorPoint(x, y, tileSideSegments int) image.Point {
 	anchor := image.Point{
 		X: x * u.tileWidth / tileSideSegments,
@@ -65,6 +75,17 @@ func (u *Unpacker) Init(tileSideSegments int) error {
 
 // outXTiles is the number of output tiles in x direction
 // tileSideSegments is the number of segments in a tile (e.g. packed tile was segmented. 2 for to 2x2, 3 for 3x3, etc.)
+// drawFullTile draws a full tile on the canvas based on the provided data and index.
+// It calculates the position of the tile on the canvas and draws the corresponding segments from the source image.
+//
+// Parameters:
+// - canvas: The image.NRGBA on which the tile will be drawn.
+// - data: The quadTileData containing the positions of the segments in the source image.
+// - idx: The index of the tile to be drawn.
+// - outXTiles: The number of output tiles in the x direction.
+//
+// Returns:
+// - Nothing.
 func (u *Unpacker) drawFullTile(canvas *image.NRGBA, data quadTileData, idx, outXTiles int) {
 	if data == nil {
 		return
@@ -98,6 +119,7 @@ func (u *Unpacker) drawFullTile(canvas *image.NRGBA, data quadTileData, idx, out
 	}
 }
 
+// drawFullSingleTile used for rendering a single tile.
 func (u *Unpacker) drawFullSingleTile(tile *image.NRGBA, data quadTileData) {
 	u.drawFullTile(tile, data, 0, 1)
 }
