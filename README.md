@@ -23,11 +23,13 @@ To tilesets like this:
 
 
 ## How to use
+* [get yourself Go](https://go.dev/doc/install) 
 * put simple tileset image (for example 2x3_packed.png) to source folder
-* run
-  ```go run . ./examples/2x3_packed.png output.local.png```
-* grab complite tileset (for example output.local.png)
+* run ```go run . [src image] [dst image]```
+  e.g. ```go run . ./examples/2x3_packed.png output.local.png```
+* grab complete tilesets from `out` directory
 * enjoy
+* alternatively you can build an application using `make build` command to use it as a standalone application without Go
 
 ## Features and plans
 - [x] Unpack from 6 tiles to 16 tiles
@@ -36,5 +38,5 @@ To tilesets like this:
 - [ ] Unpack from 6 or 16 tiles to 256 tiles
 - [ ] Export to Tiled
 - [ ] Export to Godot
-
-  [//]: # (- [x] Unpack from 6 or 28 tiles to 92 tiles)
+- [ ] More build options (Win, Mac)
+- [ ] Document and prettify code
