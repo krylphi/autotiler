@@ -11,26 +11,13 @@ const (
 func (u *Unpacker) From6to16Terrain1() (*image.NRGBA, error) {
 	exp := export6to28TileSet()
 	quadMap := append(exp[14:], exp[1], exp[0]) // 0 - filled terrain 1, 1 - small terrain 2 patch on top
-	return u.From6to16Terrain(quadMap)
+	return u.from6to16Terrain(quadMap)
 }
 
 func (u *Unpacker) From6to16Terrain2() (*image.NRGBA, error) {
 	exp := export6to28TileSet()
 	quadMap := append(exp[14:], exp[1], exp[0]) // 0 - filled terrain 1, 1 - small terrain 2 patch on top
-	return u.From6to16Terrain(quadMap)
-}
-
-func (u *Unpacker) From6to16Terrain(quadMap []quadTileData) (*image.NRGBA, error) {
-	if u.xTiles*u.yTiles != sixPackType {
-		return nil, errInvalidPackType
-	}
-	canvas := image.NewNRGBA(image.Rect(0, 0, u.tileWidth*16, u.tileHeight*1))
-	// todo optimize to generate automatically and consider scaling for 47 and 255 tilesets
-
-	for idx := 0; idx < 16; idx++ {
-		u.drawFullTile(canvas, quadMap[idx], idx, 16)
-	}
-	return canvas, nil
+	return u.from6to16Terrain(quadMap)
 }
 
 func (u *Unpacker) From6to28() (*image.NRGBA, error) {
@@ -127,6 +114,19 @@ func (u *Unpacker) From6to48Terrain2() (*image.NRGBA, error) {
 	}
 
 	return u.from6to48Terrain(quads)
+}
+
+func (u *Unpacker) from6to16Terrain(quadMap []quadTileData) (*image.NRGBA, error) {
+	if u.xTiles*u.yTiles != sixPackType {
+		return nil, errInvalidPackType
+	}
+	canvas := image.NewNRGBA(image.Rect(0, 0, u.tileWidth*16, u.tileHeight*1))
+	// todo optimize to generate automatically and consider scaling for 47 and 255 tilesets
+
+	for idx := 0; idx < 16; idx++ {
+		u.drawFullTile(canvas, quadMap[idx], idx, 16)
+	}
+	return canvas, nil
 }
 
 func (u *Unpacker) from6to48Terrain(quadMap [16]quadTileData) (*image.NRGBA, error) {
