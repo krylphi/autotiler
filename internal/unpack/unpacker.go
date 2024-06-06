@@ -14,6 +14,9 @@ var (
 	errInvalidPackType = errors.New("invalid pack type")
 )
 
+// anchorSet represents a set of anchor points for a tile set.
+// The anchor point is used to determine the starting point for drawing a tile on the canvas.
+// The image will be inserted down and right from the anchor point.
 type anchorSet [][]image.Point
 
 // quadTileData represents a quad map for a 2x3 tile set.
