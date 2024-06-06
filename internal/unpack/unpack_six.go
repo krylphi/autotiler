@@ -203,6 +203,17 @@ func (u *Unpacker) from6to16Terrain(quadMap []quadTileData) (*image.NRGBA, error
 	return canvas, nil
 }
 
+// from6to48Terrain generates a 12x4 tile set from a 2x3 tile set.
+//
+// Parameters:
+//
+//	quadMap [16]quadTileData - an array of quadTileData representing the tile patterns for each new tile produced
+//	from the original 2x3 tile set required to build 12x4 tile set
+//
+// Returns:
+//
+//	*image.NRGBA - a pointer to a new image.NRGBA representing the 12x4 tile set built from the original 2x3 tile set
+//	error - an error if any occurred during the process
 func (u *Unpacker) from6to48Terrain(quadMap [16]quadTileData) (*image.NRGBA, error) {
 	if u.xTiles*u.yTiles != sixPackType {
 		return nil, errInvalidPackType
@@ -212,7 +223,7 @@ func (u *Unpacker) from6to48Terrain(quadMap [16]quadTileData) (*image.NRGBA, err
 	canvas := image.NewNRGBA(image.Rect(0, 0, u.tileWidth*12, u.tileHeight*4))
 	tileset := newTileSet(canvas, u.tileWidth, u.tileHeight)
 
-	tilePattern := quadMap[0] // 1 - small terrain 2 patch on top
+	tilePattern := quadMap[0]
 	tile := image.NewNRGBA(image.Rect(0, 0, u.tileWidth, u.tileHeight))
 	// fully drawn
 	u.drawFullSingleTile(tile, tilePattern)
