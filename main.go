@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/krylphi/autotiler/unpack"
 	"image"
 	"image/png"
-	"log"
 	"os"
+
+	"github.com/krylphi/autotiler/internal/unpack"
 )
 
 func main() {
@@ -28,7 +28,7 @@ func main() {
 
 	g := unpack.NewUnpacker(img, 2, 3)
 	if err := g.Init(2); err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	// todo parallel

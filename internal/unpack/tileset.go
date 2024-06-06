@@ -5,24 +5,20 @@ import (
 	"image/draw"
 )
 
-type TileSet struct {
+type tileSet struct {
 	canvas                *image.NRGBA
 	tileWidth, tileHeight int
 }
 
-func NewTileSet(canvas *image.NRGBA, tileWidth, tileHeight int) *TileSet {
-	return &TileSet{
+func newTileSet(canvas *image.NRGBA, tileWidth, tileHeight int) *tileSet {
+	return &tileSet{
 		canvas:     canvas,
 		tileWidth:  tileWidth,
 		tileHeight: tileHeight,
 	}
 }
 
-func (t *TileSet) GetTile(x, y int) *image.NRGBA {
-	return t.canvas.SubImage(image.Rect(x*t.tileWidth, y*t.tileHeight, (x+1)*t.tileWidth, (y+1)*t.tileHeight)).(*image.NRGBA)
-}
-
-func (t *TileSet) SetTile(x, y int, tile *image.NRGBA) {
+func (t *tileSet) setTile(x, y int, tile *image.NRGBA) {
 	canvasMin := image.Point{
 		X: x * t.tileWidth,
 		Y: y * t.tileHeight,
@@ -46,12 +42,12 @@ func (t *TileSet) SetTile(x, y int, tile *image.NRGBA) {
 	)
 }
 
-func (t *TileSet) SetTileWithRotationLeft(x, y int, tile *image.NRGBA) *image.NRGBA {
-	rotatedTile := RotateLeft90(tile)
-	t.SetTile(x, y, rotatedTile)
+func (t *tileSet) setTileWithRotationLeft(x, y int, tile *image.NRGBA) *image.NRGBA {
+	rotatedTile := rotateLeft90(tile)
+	t.setTile(x, y, rotatedTile)
 	return rotatedTile
 }
 
-func (t *TileSet) GetCanvas() *image.NRGBA {
+func (t *tileSet) getCanvas() *image.NRGBA {
 	return t.canvas
 }
