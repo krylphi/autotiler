@@ -24,6 +24,7 @@ To tilesets like this:
 
 ## How to use
 * [get yourself Go](https://go.dev/doc/install) 
+* clone this repository or download sources.
 * put simple tileset image (for example 2x3_packed.png) to source folder
 * run ```go run . [src image] [dst image]```
   e.g. ```go run . ./examples/2x3_packed.png output.local.png```
