@@ -34,7 +34,7 @@ To tilesets like this:
 ## Features and plans
 - [x] Unpack from 6 tiles to 16 tiles
 - [x] Unpack from 6 tiles to 28 tiles
-- [ ] Unpack from 6 or 16 tiles to 47 tiles
+- [x] Unpack from 6 to 47 tiles
 - [ ] Unpack from 6 or 16 tiles to 256 tiles
 - [ ] Export to Tiled
 - [ ] Export to Godot
