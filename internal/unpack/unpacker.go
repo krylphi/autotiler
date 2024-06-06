@@ -16,6 +16,17 @@ var (
 
 type anchorSet [][]image.Point
 
+// quadTileData represents a quad map for a 2x3 tile set.
+// Basically, every tile of the original 2x3 tile set is split into 4 smaller tiles.
+// Different combinations of said sub tiles will produce resulting tile patterns.
+// Every sub tile of original tile set is represented by pair of their coordinates.
+// So for example filled terrain 2 tile will be:
+//
+//	&[4][2]int{
+//		{0, 0}, {0, 1},
+//		{1, 0}, {1, 1},
+//	}
+//	 where {x, y} is a coordinate of a sub tile.
 type quadTileData *[4][2]int
 
 type Unpacker struct {
