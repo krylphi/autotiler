@@ -33,7 +33,37 @@ func main() {
 
 	// todo parallel
 
-	canvas, err := g.From6to16Terrain1()
+	canvas, err := g.From6to48Terrain1()
+	if err != nil {
+		panic(err)
+	}
+	file48t1, err := os.Create(fmt.Sprintf("out/12x4_terrain1_%s", outputFile))
+	if err != nil {
+		panic(err)
+	}
+	defer file48t1.Close()
+
+	err = png.Encode(file48t1, canvas)
+	if err != nil {
+		panic(err)
+	}
+
+	canvas, err = g.From6to48Terrain2()
+	if err != nil {
+		panic(err)
+	}
+	file48t2, err := os.Create(fmt.Sprintf("out/12x4_terrain2_%s", outputFile))
+	if err != nil {
+		panic(err)
+	}
+	defer file48t2.Close()
+
+	err = png.Encode(file48t2, canvas)
+	if err != nil {
+		panic(err)
+	}
+
+	canvas, err = g.From6to16Terrain1()
 	if err != nil {
 		panic(err)
 	}

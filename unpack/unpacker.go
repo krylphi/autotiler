@@ -16,7 +16,7 @@ var (
 
 type anchorSet [][]image.Point
 
-type tileData *[9][2]int
+type quadTileData *[4][2]int
 
 type Unpacker struct {
 	anchors               anchorSet
@@ -44,8 +44,8 @@ func NewUnpacker(src image.Image, xTiles, yTiles int) *Unpacker {
 
 func newTileData(
 	top,
-	bottom [2][2]int) tileData {
-	return &[9][2]int{
+	bottom [2][2]int) quadTileData {
+	return &[4][2]int{
 		top[0], top[1],
 		bottom[0], bottom[1],
 	}
@@ -76,7 +76,7 @@ func (u *Unpacker) Init(tileSideSegments int) error {
 
 // outXTiles is the number of output tiles in x direction
 // tileSideSegments is the number of segments in a tile (e.g. packed tile was segmented. 2 for to 2x2, 3 for 3x3, etc.)
-func (u *Unpacker) drawFullTile(canvas *image.NRGBA, data tileData, idx int, outXTiles int, tileSideSegments int) {
+func (u *Unpacker) drawFullTile(canvas *image.NRGBA, data quadTileData, idx int, outXTiles int, tileSideSegments int) {
 	if data == nil {
 		return
 	}
@@ -107,6 +107,10 @@ func (u *Unpacker) drawFullTile(canvas *image.NRGBA, data tileData, idx int, out
 			draw.Src,
 		)
 	}
+}
+
+func (u *Unpacker) drawFullSingleTile(tile *image.NRGBA, data quadTileData) {
+	u.drawFullTile(tile, data, 0, 1, 2)
 }
 
 func (u *Unpacker) expandWithRotation(src, canvas *image.NRGBA, idx, rotations, x, y, outXTiles int) int {
@@ -159,7 +163,7 @@ func (u *Unpacker) expandWithRotation(src, canvas *image.NRGBA, idx, rotations, 
 				Y: u.tileHeight,
 			}),
 		}
-		tile = Rotate90(tile)
+		tile = RotateLeft90(tile)
 		draw.Draw(
 			canvas,
 			canvasArea,
