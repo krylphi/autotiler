@@ -31,6 +31,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// todo parallel
+
 	canvas, err := g.From6to48Terrain1()
 	if err != nil {
 		panic(err)
@@ -46,10 +48,19 @@ func main() {
 		panic(err)
 	}
 
-	// todo parallel
+	canvas, err = g.From6to48Terrain2()
+	if err != nil {
+		panic(err)
+	}
+	file48t2, err := os.Create(fmt.Sprintf("out/12x4_terrain2_%s", outputFile))
+	if err != nil {
+		panic(err)
+	}
+	defer file48t2.Close()
 
-	if true {
-		return
+	err = png.Encode(file48t2, canvas)
+	if err != nil {
+		panic(err)
 	}
 
 	canvas, err = g.From6to16Terrain1()

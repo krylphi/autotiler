@@ -92,6 +92,48 @@ func (u *Unpacker) From6to48Terrain1() (*image.NRGBA, error) {
 	return u.from6to48Terrain(quads)
 }
 
+func (u *Unpacker) From6to48Terrain2() (*image.NRGBA, error) {
+	exp := export6to28TileSet()
+	quadMap := append(exp[14:], exp[1], exp[0]) // 0 - filled terrain 1, 1 - small terrain 2 patch on top
+	quads := [16]quadTileData{
+		quadMap[1],
+		quadMap[4],
+		&[4][2]int{
+			{0, 2}, {3, 2},
+			{0, 5}, {3, 5},
+		},
+		quadMap[2],
+		quadMap[5],
+		quadMap[9],
+		// 2nd 16
+		&[4][2]int{
+			{1, 3}, {3, 0},
+			{2, 1}, {3, 1},
+		},
+		quadMap[13],
+		&[4][2]int{
+			{1, 2}, {2, 2},
+			{2, 1}, {2, 4},
+		},
+		&[4][2]int{
+			{1, 2}, {2, 2},
+			{1, 4}, {3, 1},
+		},
+		// 3rd 16
+		quadMap[3],
+		&[4][2]int{
+			{2, 0}, {3, 0},
+			{1, 4}, {2, 4},
+		},
+		quadMap[8],
+		quadMap[0],
+		quadMap[15],
+		quadMap[12],
+	}
+
+	return u.from6to48Terrain(quads)
+}
+
 func (u *Unpacker) from6to48Terrain(quadMap [16]quadTileData) (*image.NRGBA, error) {
 	if u.xTiles*u.yTiles != sixPackType {
 		return nil, errInvalidPackType
