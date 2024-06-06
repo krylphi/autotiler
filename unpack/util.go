@@ -6,7 +6,7 @@ import (
 	"sync"
 )
 
-func Rotate90(img *image.NRGBA) *image.NRGBA {
+func RotateLeft90(img *image.NRGBA) *image.NRGBA {
 	width := img.Bounds().Dx()
 	height := img.Bounds().Dy()
 	rowSize := width * 4
