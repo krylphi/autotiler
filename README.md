@@ -43,7 +43,7 @@ To tilesets like this:
 * run ```go run . <src image> <dst image> [padding]```
   e.g. ```go run . ./examples/2x3_packed.png output.local.png```
 * you can optionally set padding for tiles in px. To do so you need to add desired padding as 3rd argument:
-  e.g. ```go run . ./examples/2x3_packed.png output.local.png 1``` - this will create tilesets with side paddings being 1 px and 2px between tiles.
+  e.g. ```go run . ./examples/2x3_packed.png output.local.png 1``` - this will create tilesets with 1 px margin and 2px spacing.
 * grab complete tilesets from `out` directory
 * enjoy
 * alternatively you can build an application using `make build` command to use it as a standalone application without Go
