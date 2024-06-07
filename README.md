@@ -3,6 +3,12 @@ Unpacks tilesets from a compressed one
 
 Pure go. No external dependencies
 
+## Disclaimer
+
+Project is in alpha state. Was quickly developed to do stuff, so code is not pretty, but functional.
+
+## Features
+
 Tileset-Generator unpacks tileset like this:
 
 ![packed](./examples/2x3_packed.png)
@@ -40,7 +46,7 @@ To tilesets like this:
 * enjoy
 * alternatively you can build an application using `make build` command to use it as a standalone application without Go
 
-## Features and plans
+## Roadmap and plans
 - [x] Unpack from 6 tiles to 16 tiles
 - [x] Unpack from 6 tiles to 28 tiles
 - [x] Unpack from 6 to 47 tiles
@@ -48,4 +54,4 @@ To tilesets like this:
 - [ ] Export to Tiled
 - [ ] Export to Godot
 - [ ] More build options (Win, Mac)
-- [ ] Document and prettify code
+- [ ] Document, prettify code and make application more versatile
