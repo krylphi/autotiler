@@ -54,7 +54,7 @@ func rotateLeft90(img *image.NRGBA) *image.NRGBA {
 
 // scan copies pixel data from a source image to a destination slice.
 // It supports copying a rectangular region of the source image to the destination slice.
-// The function uses optimized copying for a single pixel (size == 4) and falls back to a generic copy for larger regions.
+// The function uses optimised copying for a single pixel (size == 4) and falls back to a generic copy for larger regions.
 //
 // Parameters:
 // - srcImg: The source image from which to copy pixel data.
@@ -63,7 +63,7 @@ func rotateLeft90(img *image.NRGBA) *image.NRGBA {
 // - x2, y2: The bottom-right coordinates of the rectangular region to copy from the source image.
 //
 // Returns:
-// - None
+// - None.
 func scan(srcImg *image.NRGBA, dstPx []uint8, x1, y1, x2, y2 int) {
 	size := (x2 - x1) * 4
 	srcStride := y1*srcImg.Stride + x1*4
@@ -99,7 +99,7 @@ func scan(srcImg *image.NRGBA, dstPx []uint8, x1, y1, x2, y2 int) {
 // - fn: The function to be executed in parallel. It should accept a channel of integers as its parameter.
 //
 // Returns:
-// - None
+// - None.
 func parallel(start, stop int, fn func(<-chan int)) {
 	count := stop - start
 	if count < 1 {
