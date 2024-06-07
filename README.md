@@ -40,11 +40,14 @@ To tilesets like this:
 * [get yourself Go](https://go.dev/doc/install) 
 * clone this repository or download sources.
 * put simple tileset image (for example 2x3_packed.png) to source folder
-* run ```go run . <src image> <dst image> [padding]```
-  e.g. ```go run . ./examples/2x3_packed.png output.local.png```
-* you can optionally set padding for tiles in px. To do so you need to add desired padding as 3rd argument:
-  e.g. ```go run . ./examples/2x3_packed.png output.local.png 1``` - this will create tilesets with 1 px margin and 2px spacing.
-* grab complete tilesets from `out` directory
+* run ```go run . -in <file_in> [-o <file_out>] [-p <padding>] [-e <export_type(16,28,48,all)>]```
+
+  e.g. ```go run . -in ./examples/2x3_packed.png -o ./out/output.local.png -p 1 -e 16 -e 28 -e 48```
+* you can optionally set padding for tiles in px. To do so you need to add desired padding as argument:
+
+  e.g. ```go run . -in ./examples/2x3_packed.png -p 1``` - this will create tilesets with 1 px margin and 2px spacing.
+* grab complete tilesets from directory specified in `-o`. 
+* don't worry about filenames, as program will automatically prefix output files with necessary information. E.g. for options `-o ./out/output.local.png -e 16` output files will be `./out/16x1_terrain1_output.local.png` and `./out/16x1_terrain2_output.local.png`
 * enjoy
 * alternatively you can build an application using `make build` command to use it as a standalone application without Go
 

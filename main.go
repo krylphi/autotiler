@@ -28,26 +28,37 @@ import (
 	"fmt"
 	"image"
 	"image/png"
+	"log"
 	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/krylphi/autotiler/internal/unpack"
 )
 
+const (
+	inKey      = "in"
+	paddingKey = "p"
+	exportKey  = "e"
+	outKey     = "o"
+)
+
+const (
+	export16  = "16"
+	export28  = "28"
+	export48  = "48"
+	exportAll = "all"
+)
+
 func main() {
-
-	inputFile := os.Args[1]
-
-	outputFile := os.Args[2]
-	var err error
-	var padding = 0
-	if len(os.Args) > 3 {
-		padding, err = strconv.Atoi(os.Args[3])
-		if err != nil {
-			panic(err)
-		}
+	args := parseArgs()
+	inFiles, ok := args[inKey]
+	if !ok {
+		log.Print("Missing input file")
+		os.Exit(1)
 	}
-
+	inputFile := inFiles[0] // todo add handling for multiple inputs
 	imgFile, err := os.Open(inputFile)
 	if err != nil {
 		panic(err)
@@ -59,85 +70,122 @@ func main() {
 		panic(err)
 	}
 
-	g := unpack.NewUnpacker(img, 2, 3, padding)
-	if err := g.Init(2); err != nil {
-		panic(err)
-	}
-
-	// todo cleanup and parallel
-
-	canvas, err := g.From6to48Terrain1()
-	if err != nil {
-		panic(err)
-	}
-	file48t1, err := os.Create(fmt.Sprintf("out/12x4_terrain1_%s", outputFile))
-	if err != nil {
-		panic(err)
-	}
-	defer file48t1.Close()
-
-	err = png.Encode(file48t1, canvas)
+	padding, err := strconv.Atoi(args[paddingKey][0])
 	if err != nil {
 		panic(err)
 	}
 
-	canvas, err = g.From6to48Terrain2()
-	if err != nil {
-		panic(err)
-	}
-	file48t2, err := os.Create(fmt.Sprintf("out/12x4_terrain2_%s", outputFile))
-	if err != nil {
-		panic(err)
-	}
-	defer file48t2.Close()
-
-	err = png.Encode(file48t2, canvas)
-	if err != nil {
+	unpacker := unpack.NewUnpacker(img, 2, 3, padding)
+	if err := unpacker.Init(2); err != nil {
 		panic(err)
 	}
 
-	canvas, err = g.From6to16Terrain1()
-	if err != nil {
-		panic(err)
-	}
-	file15t1, err := os.Create(fmt.Sprintf("out/16x1_terrain1_%s", outputFile))
-	if err != nil {
-		panic(err)
-	}
-	defer file15t1.Close()
-
-	err = png.Encode(file15t1, canvas)
-	if err != nil {
-		panic(err)
+	exports, ok := args[exportKey]
+	var exportTypes []string
+	if !ok || len(exports) == 0 || exports[0] == exportAll {
+		exportTypes = []string{export16, export28, export48}
+	} else {
+		exportTypes = exports
 	}
 
-	canvas, err = g.From6to16Terrain2()
-	if err != nil {
-		panic(err)
-	}
-	file15t2, err := os.Create(fmt.Sprintf("out/16x1_terrain2_%s", outputFile))
-	if err != nil {
-		panic(err)
-	}
-	defer file15t2.Close()
-
-	err = png.Encode(file15t2, canvas)
-	if err != nil {
-		panic(err)
+	outputFile := "out.local.png"
+	outFiles, ok := args[outKey]
+	if ok {
+		outputFile = outFiles[0]
 	}
 
-	canvas, err = g.From6to28()
-	if err != nil {
-		panic(err)
+	for e := range exportTypes {
+		exportType := exportTypes[e]
+		switch exportType {
+		case export16:
+			err := produceTileset(unpacker.From6to16Terrain1, outputFile, "16x1_terrain1")
+			if err != nil {
+				panic(err)
+			}
+			err = produceTileset(unpacker.From6to16Terrain2, outputFile, "16x1_terrain2")
+			if err != nil {
+				panic(err)
+			}
+		case export28:
+			err := produceTileset(unpacker.From6to28, outputFile, "14x2")
+			if err != nil {
+				panic(err)
+			}
+		case export48:
+			err := produceTileset(unpacker.From6to48Terrain1, outputFile, "12x4_terrain1")
+			if err != nil {
+				panic(err)
+			}
+			err = produceTileset(unpacker.From6to48Terrain2, outputFile, "12x4_terrain2")
+			if err != nil {
+				panic(err)
+			}
+		}
 	}
-	file1, err := os.Create(fmt.Sprintf("out/14x2_%s", outputFile))
-	if err != nil {
-		panic(err)
-	}
-	defer file1.Close()
+}
 
-	err = png.Encode(file1, canvas)
+func parseArgs() map[string][]string {
+	if len(os.Args) < 2 {
+		log.Print(
+			"Usage: autotiler -in <file_in> [-o <file_out>] [-p <padding>] [-e <export_type(16,28,48,all)>]\n" +
+				"       -e can be repeated\n")
+		os.Exit(1)
+	}
+	res := make(map[string][]string)
+	allTilesets := false
+	for i := 1; i < len(os.Args); i += 2 {
+		key := strings.TrimPrefix(os.Args[i], "-")
+		v, ok := res[key]
+		value := os.Args[i+1]
+		if key == exportKey && allTilesets {
+			continue
+		}
+		if key == exportKey && strings.EqualFold(value, exportAll) {
+			allTilesets = true
+			v = []string{"all"}
+			res[key] = v
+			continue
+		}
+		if ok {
+			v = append(v, value)
+		} else {
+			v = []string{value}
+		}
+		res[key] = v
+	}
+	return res
+}
+
+func produceTileset(unpackFunction func() (*image.NRGBA, error), outputPath, exportType string) error {
+	canvas, err := unpackFunction()
 	if err != nil {
-		panic(err)
+		return err
+	}
+	cleanPath := filepath.Clean(outputPath)
+	outputFile := fmt.Sprintf("%s_%s", exportType, filepath.Base(cleanPath))
+	outputFile = filepath.Join(filepath.Dir(cleanPath), outputFile)
+	file, err := os.Create(outputFile)
+	if err != nil {
+		return err
+	}
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(file)
+	err = png.Encode(file, canvas)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+//nolint:unused //debug function
+func printArgs(args map[string][]string) {
+	for key, params := range args {
+		for _, param := range params {
+			log.Printf("%s: %s\n", key, param)
+		}
 	}
 }
