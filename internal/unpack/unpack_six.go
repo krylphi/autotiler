@@ -89,7 +89,7 @@ func (u *Unpacker) From6to28() (*image.NRGBA, error) {
 	if u.xTiles*u.yTiles != sixPackType {
 		return nil, errInvalidPackType
 	}
-	canvas := image.NewNRGBA(image.Rect(0, 0, u.tileWidth*14, u.tileHeight*2))
+	canvas := image.NewNRGBA(image.Rect(0, 0, u.paddedTileWidth()*14, u.paddedTileHeight()*2))
 	// todo optimize to generate automatically and consider scaling for 47 and 255 tilesets
 
 	quadMap := export6to28TileSet()
@@ -218,7 +218,7 @@ func (u *Unpacker) from6to16Terrain(quadMap []quadTileData) (*image.NRGBA, error
 	if u.xTiles*u.yTiles != sixPackType {
 		return nil, errInvalidPackType
 	}
-	canvas := image.NewNRGBA(image.Rect(0, 0, u.tileWidth*16, u.tileHeight*1))
+	canvas := image.NewNRGBA(image.Rect(0, 0, u.paddedTileWidth()*16, u.paddedTileHeight()*1))
 	// todo optimize to generate automatically and consider scaling for 47 and 255 tilesets
 
 	for idx := 0; idx < 16; idx++ {
@@ -244,11 +244,11 @@ func (u *Unpacker) from6to48Terrain(quadMap [16]quadTileData) (*image.NRGBA, err
 	}
 
 	// todo pass list of tile patterns so it would be reusing code for terrain 2
-	canvas := image.NewNRGBA(image.Rect(0, 0, u.tileWidth*12, u.tileHeight*4))
-	tileset := newTileSet(canvas, u.tileWidth, u.tileHeight)
+	canvas := image.NewNRGBA(image.Rect(0, 0, u.paddedTileWidth()*12, u.paddedTileHeight()*4))
+	tileset := newTileSet(canvas, u.paddedTileWidth(), u.paddedTileHeight())
 
 	tilePattern := quadMap[0]
-	tile := image.NewNRGBA(image.Rect(0, 0, u.tileWidth, u.tileHeight))
+	tile := image.NewNRGBA(image.Rect(0, 0, u.paddedTileWidth(), u.paddedTileHeight()))
 	// fully drawn
 	u.drawFullSingleTile(tile, tilePattern)
 	tileset.setTile(0, 2, tile)

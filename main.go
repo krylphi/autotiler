@@ -29,6 +29,7 @@ import (
 	"image"
 	"image/png"
 	"os"
+	"strconv"
 
 	"github.com/krylphi/autotiler/internal/unpack"
 )
@@ -38,6 +39,14 @@ func main() {
 	inputFile := os.Args[1]
 
 	outputFile := os.Args[2]
+	var err error
+	var padding = 0
+	if len(os.Args) > 3 {
+		padding, err = strconv.Atoi(os.Args[3])
+		if err != nil {
+			panic(err)
+		}
+	}
 
 	imgFile, err := os.Open(inputFile)
 	if err != nil {
@@ -50,7 +59,7 @@ func main() {
 		panic(err)
 	}
 
-	g := unpack.NewUnpacker(img, 2, 3)
+	g := unpack.NewUnpacker(img, 2, 3, padding)
 	if err := g.Init(2); err != nil {
 		panic(err)
 	}

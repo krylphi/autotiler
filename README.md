@@ -40,8 +40,10 @@ To tilesets like this:
 * [get yourself Go](https://go.dev/doc/install) 
 * clone this repository or download sources.
 * put simple tileset image (for example 2x3_packed.png) to source folder
-* run ```go run . [src image] [dst image]```
+* run ```go run . <src image> <dst image> [padding]```
   e.g. ```go run . ./examples/2x3_packed.png output.local.png```
+* you can optionally set padding for tiles in px. To do so you need to add desired padding as 3rd argument:
+  e.g. ```go run . ./examples/2x3_packed.png output.local.png 1``` - this will create tilesets with side paddings being 1 px and 2px between tiles.
 * grab complete tilesets from `out` directory
 * enjoy
 * alternatively you can build an application using `make build` command to use it as a standalone application without Go
