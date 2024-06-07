@@ -62,9 +62,10 @@ type Unpacker struct {
 	src                   image.Image
 	xTiles                int
 	yTiles                int
+	padding               int
 }
 
-func NewUnpacker(src image.Image, xTiles, yTiles int) *Unpacker {
+func NewUnpacker(src image.Image, xTiles, yTiles, padding int) *Unpacker {
 	// todo auto detect
 	tileWidth := src.Bounds().Dx() / xTiles
 	tileHeight := src.Bounds().Dy() / yTiles
@@ -75,6 +76,7 @@ func NewUnpacker(src image.Image, xTiles, yTiles int) *Unpacker {
 		tileHeight: tileHeight,
 		xTiles:     xTiles,
 		yTiles:     yTiles,
+		padding:    padding,
 	}
 }
 
@@ -133,8 +135,11 @@ func (u *Unpacker) drawFullTile(canvas *image.NRGBA, data quadTileData, idx, out
 		y := xy[1]
 		line := idx / outXTiles
 		row := idx % outXTiles
-		shiftX := i % 2 * u.tileWidth / 2
-		shiftY := i >> 1 * u.tileHeight / 2
+		paddingY := u.padding + line*2*u.padding
+		paddingX := u.padding + row*2*u.padding
+
+		shiftX := i%2*u.tileWidth/2 + paddingX
+		shiftY := i>>1*u.tileHeight/2 + paddingY
 		canvasMin := image.Point{
 			X: row*u.tileWidth + shiftX,
 			Y: line*u.tileHeight + shiftY,
@@ -160,6 +165,14 @@ func (u *Unpacker) drawFullTile(canvas *image.NRGBA, data quadTileData, idx, out
 // drawFullSingleTile used for rendering a single tile.
 func (u *Unpacker) drawFullSingleTile(tile *image.NRGBA, data quadTileData) {
 	u.drawFullTile(tile, data, 0, 1)
+}
+
+func (u *Unpacker) paddedTileWidth() int {
+	return u.tileWidth + u.padding*2
+}
+
+func (u *Unpacker) paddedTileHeight() int {
+	return u.tileHeight + u.padding*2
 }
 
 //nolint:unused //debug function

@@ -2,7 +2,7 @@
   <configuration default="false" name="go build github.com/krylphi/autotiler" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
     <module name="autotiler" />
     <working_directory value="$PROJECT_DIR$" />
-    <parameters value="./examples/2x3_packed.png output.local.png" />
+    <parameters value="./examples/2x3_packed.png output.local.png 1" />
     <kind value="PACKAGE" />
     <package value="github.com/krylphi/autotiler" />
     <directory value="$PROJECT_DIR$" />
