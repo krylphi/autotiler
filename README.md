@@ -24,6 +24,8 @@ Autotiler unpacks tileset like this to formats more suitable for map generation 
 
   e.g. ```go run . -in ./examples/2x3_packed.png -p 1``` - this will create tilesets with 1 px margin and 2px spacing.
 * grab complete tilesets from directory specified in `-o`.
+* you can pass several `-in` and `-o` parameters to unpack several tilesets at once. They will match the order. In case there are fewer `-o` parameters, the default name will be used and results will be placed in current directory. 
+* alternatively you can just run `make unpack FILE_IN=<file>` and it will place all results in `./out` directory
 * don't worry about filenames, as program will automatically prefix output files with necessary information. E.g. for options `-o ./out/output.local.png -e 16` output files will be `./out/16x1_terrain1_output.local.png` and `./out/16x1_terrain2_output.local.png`
 * enjoy
 * alternatively you can build an application using `make build` command to use it as a standalone application without Go

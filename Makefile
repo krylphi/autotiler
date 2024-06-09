@@ -9,6 +9,10 @@ GOPATH ?= $(shell go env GOPATH)
 VERSION ?=$(shell git describe --tags --always)
 PACKAGES = $(shell go list -f {{.Dir}} ./... | grep -v /vendor/ | grep -v /proto )
 DATE = $(shell date -R)
+FILE_IN?=./examples/2x3_packed.png
+FILE_OUT=./out/output.local.png
+
+
 
 BIN_NAME=autotiler
 
@@ -38,7 +42,7 @@ src-fmt:
 	gofmt -s -w ${PACKAGES}
 	gci write --skip-generated --skip-vendor --section Standard --section Default --section "Prefix(github.com/krylphi)" --section "Prefix(github.com/krylphi/$(BIN_NAME))" ${PACKAGES}
 
-.PHONY: unpack-example
-unpack-example:
-	go run . ./examples/2x3_packed.png output.local.png\
+.PHONY: unpack
+unpack:
+	go run . -in $(FILE_IN) -o $(FILE_OUT) -e all
 
