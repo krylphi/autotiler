@@ -58,26 +58,46 @@ func main() {
 		log.Print("Missing input file")
 		os.Exit(1)
 	}
-	inputFile := inFiles[0] // todo add handling for multiple inputs
+	outFiles, outs := args[outKey]
+	for i, inFile := range inFiles {
+		inputFile := inFile
+		outputFile := fmt.Sprintf("%d.local.png", i)
+		if outs {
+			if len(outFiles) > i {
+				outputFile = outFiles[i]
+			}
+		}
+		err := export(args, inputFile, outputFile)
+		if err != nil {
+			log.Print(err)
+			os.Exit(1)
+		}
+	}
+}
+
+func export(args map[string][]string, inputFile, outputFile string) error { // todo wrap errors
 	imgFile, err := os.Open(inputFile)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer imgFile.Close()
 
 	img, _, err := image.Decode(imgFile)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	padding, err := strconv.Atoi(args[paddingKey][0])
-	if err != nil {
-		panic(err)
+	padding := 0
+	if paddings, ok := args[paddingKey]; ok {
+		padding, err = strconv.Atoi(paddings[0])
+		if err != nil {
+			return err
+		}
 	}
 
 	unpacker := unpack.NewUnpacker(img, 2, 3, padding)
 	if err := unpacker.Init(2); err != nil {
-		panic(err)
+		return err
 	}
 
 	exports, ok := args[exportKey]
@@ -88,40 +108,35 @@ func main() {
 		exportTypes = exports
 	}
 
-	outputFile := "out.local.png"
-	outFiles, ok := args[outKey]
-	if ok {
-		outputFile = outFiles[0]
-	}
-
 	for e := range exportTypes {
 		exportType := exportTypes[e]
 		switch exportType {
 		case export16:
 			err := produceTileset(unpacker.From6to16Terrain1, outputFile, "16x1_terrain1")
 			if err != nil {
-				panic(err)
+				return err
 			}
 			err = produceTileset(unpacker.From6to16Terrain2, outputFile, "16x1_terrain2")
 			if err != nil {
-				panic(err)
+				return err
 			}
 		case export28:
 			err := produceTileset(unpacker.From6to28, outputFile, "14x2")
 			if err != nil {
-				panic(err)
+				return err
 			}
 		case export48:
 			err := produceTileset(unpacker.From6to48Terrain1, outputFile, "12x4_terrain1")
 			if err != nil {
-				panic(err)
+				return err
 			}
 			err = produceTileset(unpacker.From6to48Terrain2, outputFile, "12x4_terrain2")
 			if err != nil {
-				panic(err)
+				return err
 			}
 		}
 	}
+	return nil
 }
 
 func parseArgs() map[string][]string {
