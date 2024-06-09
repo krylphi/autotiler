@@ -63,9 +63,15 @@ type Unpacker struct {
 	xTiles                int
 	yTiles                int
 	padding               int
+	options               Options
 }
 
-func NewUnpacker(src image.Image, xTiles, yTiles, padding int) *Unpacker {
+type Options struct {
+	Padding           int
+	MissingTerrainTwo bool
+}
+
+func NewUnpacker(src image.Image, xTiles, yTiles int, options Options) *Unpacker {
 	// todo auto detect
 	tileWidth := src.Bounds().Dx() / xTiles
 	tileHeight := src.Bounds().Dy() / yTiles
@@ -76,7 +82,7 @@ func NewUnpacker(src image.Image, xTiles, yTiles, padding int) *Unpacker {
 		tileHeight: tileHeight,
 		xTiles:     xTiles,
 		yTiles:     yTiles,
-		padding:    padding,
+		options:    options,
 	}
 }
 
@@ -135,8 +141,8 @@ func (u *Unpacker) drawFullTile(canvas *image.NRGBA, data quadTileData, idx, out
 		y := xy[1]
 		line := idx / outXTiles
 		row := idx % outXTiles
-		paddingY := u.padding + line*2*u.padding
-		paddingX := u.padding + row*2*u.padding
+		paddingY := u.options.Padding + line*2*u.options.Padding
+		paddingX := u.options.Padding + row*2*u.options.Padding
 
 		shiftX := i%2*u.tileWidth/2 + paddingX
 		shiftY := i>>1*u.tileHeight/2 + paddingY
@@ -168,11 +174,11 @@ func (u *Unpacker) drawFullSingleTile(tile *image.NRGBA, data quadTileData) {
 }
 
 func (u *Unpacker) paddedTileWidth() int {
-	return u.tileWidth + u.padding*2
+	return u.tileWidth + u.options.Padding*2
 }
 
 func (u *Unpacker) paddedTileHeight() int {
-	return u.tileHeight + u.padding*2
+	return u.tileHeight + u.options.Padding*2
 }
 
 //nolint:unused //debug function

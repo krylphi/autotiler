@@ -31,6 +31,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -45,14 +46,29 @@ const (
 )
 
 const (
+	missingTerrain2 = "missing-terrain-two"
+)
+
+const (
 	export16  = "16"
 	export28  = "28"
 	export48  = "48"
 	exportAll = "all"
 )
 
+type param struct {
+	value   string
+	options []string
+}
+
 func main() {
-	args := parseArgs()
+	args, err := parseArgs()
+	if err != nil {
+		log.Print(err)
+		os.Exit(1)
+	}
+	printArgs(args)
+
 	inFiles, ok := args[inKey]
 	if !ok {
 		log.Print("Missing input file")
@@ -60,23 +76,22 @@ func main() {
 	}
 	outFiles, outs := args[outKey]
 	for i, inFile := range inFiles {
-		inputFile := inFile
 		outputFile := fmt.Sprintf("%d.local.png", i)
 		if outs {
 			if len(outFiles) > i {
-				outputFile = outFiles[i]
+				outputFile = outFiles[i].value
 			}
 		}
-		err := export(args, inputFile, outputFile)
+		err := export(args, inFile, outputFile)
 		if err != nil {
 			log.Print(err)
-			os.Exit(1)
+			continue
 		}
 	}
 }
 
-func export(args map[string][]string, inputFile, outputFile string) error { // todo wrap errors
-	imgFile, err := os.Open(inputFile)
+func export(args map[string][]param, inputFile param, outputFile string) error { // todo wrap errors
+	imgFile, err := os.Open(inputFile.value)
 	if err != nil {
 		return err
 	}
@@ -89,23 +104,31 @@ func export(args map[string][]string, inputFile, outputFile string) error { // t
 
 	padding := 0
 	if paddings, ok := args[paddingKey]; ok {
-		padding, err = strconv.Atoi(paddings[0])
+		padding, err = strconv.Atoi(paddings[0].value)
 		if err != nil {
 			return err
 		}
 	}
 
-	unpacker := unpack.NewUnpacker(img, 2, 3, padding)
+	options := unpack.Options{
+		Padding:           padding,
+		MissingTerrainTwo: slices.Contains(inputFile.options, missingTerrain2),
+	}
+
+	unpacker := unpack.NewUnpacker(img, 2, 3, options)
 	if err := unpacker.Init(2); err != nil {
 		return err
 	}
 
 	exports, ok := args[exportKey]
 	var exportTypes []string
-	if !ok || len(exports) == 0 || exports[0] == exportAll {
+	if !ok || len(exports) == 0 || exports[0].value == exportAll {
 		exportTypes = []string{export16, export28, export48}
 	} else {
-		exportTypes = exports
+		exportTypes = make([]string, len(exports))
+		for e := range exports {
+			exportTypes[e] = exports[e].value
+		}
 	}
 
 	for e := range exportTypes {
@@ -139,36 +162,59 @@ func export(args map[string][]string, inputFile, outputFile string) error { // t
 	return nil
 }
 
-func parseArgs() map[string][]string {
+func parseArgs() (map[string][]param, error) {
 	if len(os.Args) < 2 {
 		log.Print(
-			"Usage: autotiler -in <file_in> [-o <file_out>] [-p <padding>] [-e <export_type(16,28,48,all)>]\n" +
-				"       -e can be repeated\n")
+			"Usage: autotiler -in <file_in> [-o <file_out>] [-p <padding>] [-e <export_type(16,28,48,all)>] [--missing-terrain-two]\n" +
+				"       -in, -o and -e can be repeated\n")
 		os.Exit(1)
 	}
-	res := make(map[string][]string)
+	args := make(map[string][]param)
 	allTilesets := false
 	for i := 1; i < len(os.Args); i += 2 {
+		if strings.HasPrefix(os.Args[i], "--") || !strings.HasPrefix(os.Args[i], "-") {
+			return nil, fmt.Errorf("Invalid argument: %s", os.Args[i])
+		}
 		key := strings.TrimPrefix(os.Args[i], "-")
-		v, ok := res[key]
-		value := os.Args[i+1]
+		v, ok := args[key]
+		value := param{
+			value:   os.Args[i+1],
+			options: []string{},
+		}
 		if key == exportKey && allTilesets {
 			continue
 		}
-		if key == exportKey && strings.EqualFold(value, exportAll) {
+		if key == exportKey && strings.EqualFold(value.value, exportAll) {
 			allTilesets = true
-			v = []string{"all"}
-			res[key] = v
+			v = []param{{
+				value: "all",
+			}}
+			args[key] = v
 			continue
+		}
+		if len(os.Args) > i+2 {
+			if strings.HasPrefix(os.Args[i+2], "--") {
+				value.options = append(value.options, os.Args[i+2])
+				i++
+			}
+			for {
+				if len(os.Args) <= i || !strings.HasPrefix(os.Args[i], "--") {
+					break
+				}
+				if strings.HasPrefix(os.Args[i], "--") {
+					value.options = append(value.options, os.Args[i+2])
+					i++
+				}
+			}
 		}
 		if ok {
 			v = append(v, value)
 		} else {
-			v = []string{value}
+			v = []param{value}
 		}
-		res[key] = v
+		args[key] = v
 	}
-	return res
+	return args, nil
 }
 
 func produceTileset(unpackFunction func() (*image.NRGBA, error), outputPath, exportType string) error {
@@ -197,9 +243,10 @@ func produceTileset(unpackFunction func() (*image.NRGBA, error), outputPath, exp
 }
 
 //nolint:unused //debug function
-func printArgs(args map[string][]string) {
-	for key, params := range args {
-		for _, param := range params {
+func printArgs(args map[string][]param) {
+	log.Printf("Args:\n")
+	for key, arg := range args {
+		for _, param := range arg {
 			log.Printf("%s: %s\n", key, param)
 		}
 	}
